@@ -16,7 +16,7 @@ class _HomepageState extends State<Homepage> {
   final TextEditingController textController = TextEditingController();
 
 //oopen dialog box to add a note para ini sa yadtung floating action bar
-void openNotebox(){
+void openNotebox({String? docID}){
   showDialog(context: context, 
   builder: (context) => AlertDialog(
     content: TextField(
@@ -26,7 +26,13 @@ void openNotebox(){
       //button to save
       ElevatedButton(onPressed: () {
         //add a new note
-        firestoreService.addNote(textController.text);
+        if (docID == null){
+          firestoreService.addNote(textController.text);
+        }
+        //update an existing note
+        else{
+          firestoreService.updateNote(docID, textController.text);
+        }
 
         //clear the text controller
         textController.clear();
@@ -65,6 +71,22 @@ void openNotebox(){
                 // displa as a list tile 
                 return ListTile(
                   title: Text(noteText),
+                  trailing:Row (
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                    //update button
+                     IconButton(
+                    onPressed: () => openNotebox(docID: docID),
+                    icon: Icon(Icons.settings),
+                  ),
+
+                    //delete button
+                     IconButton(
+                    onPressed: () => firestoreService.deleteNote(docID),
+                    icon: Icon(Icons.delete),
+                  )
+
+                  ],)
                 );
               }
             );
